@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Rounded product card used in the catalog and home grids. BindingContext: Product. -->
+<ContentView
+    x:Class="Ecommerce.Mobile.Components.ProductCard"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    x:DataType="models:Product">
+
+    <Border Style="{StaticResource Card}" Padding="0">
+        <Grid RowDefinitions="Auto,Auto">
+            <Grid HeightRequest="160"
+                  BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceMuted}, Dark={StaticResource SurfaceMutedDark}}">
+                <Image Source="{Binding ThumbnailUrl}" Aspect="AspectFill" />
+                <!-- Out of stock overlay -->
+                <Border IsVisible="{Binding InStock, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="#CC111827" StrokeThickness="0" StrokeShape="RoundRectangle 10"
+                        Padding="8,3" Margin="8" HorizontalOptions="Start" VerticalOptions="Start">
+                    <Label Text="Out of stock" TextColor="White" FontSize="11" FontFamily="OpenSansSemibold" />
+                </Border>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" Padding="12,10,12,12" Spacing="2">
+                <Label Text="{Binding CategoryName}" Style="{StaticResource Caption}" FontSize="11" LineBreakMode="TailTruncation" />
+                <Label Text="{Binding Name}" Style="{StaticResource Subtitle}" FontSize="14"
+                       MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="40" />
+                <Label Text="{Binding Price, Converter={StaticResource CurrencyConverter}}" Style="{StaticResource Price}" Margin="0,4,0,0" />
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+</ContentView>

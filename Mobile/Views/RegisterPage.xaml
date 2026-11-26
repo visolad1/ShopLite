@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:RegisterViewModel"
+    Title="">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16,24,24" Spacing="16" MaximumWidthRequest="480">
+
+            <VerticalStackLayout Spacing="4" Margin="0,0,0,8">
+                <Label Text="Create account" Style="{StaticResource Headline}" />
+                <Label Text="It only takes a minute" Style="{StaticResource Caption}" FontSize="15" />
+            </VerticalStackLayout>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.PersonOutline}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" AutomationId="RegisterName" Text="{Binding FullName}" Placeholder="Full name" Keyboard="Text" ReturnType="Next" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.Mail}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" AutomationId="RegisterEmail" Text="{Binding Email}" Placeholder="Email" Keyboard="Email"
+                           IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" ReturnType="Next" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.Lock}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" AutomationId="RegisterPassword" Text="{Binding Password}" Placeholder="Password (min. 8 characters)"
+                           IsPassword="True" ReturnType="Next" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.Lock}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" AutomationId="RegisterConfirm" Text="{Binding ConfirmPassword}" Placeholder="Confirm password"
+                           IsPassword="True" ReturnType="Go" ReturnCommand="{Binding RegisterCommand}" />
+                </Grid>
+            </Border>
+
+            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorText}" />
+
+            <Button AutomationId="RegisterButton" Text="Create account" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HeightRequest="28" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="2">
+                <Label Text="Already have an account?" Style="{StaticResource Caption}" FontSize="14" VerticalTextAlignment="Center" />
+                <Button Text="Sign in" Command="{Binding GoToLoginCommand}" Style="{StaticResource TextButton}" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

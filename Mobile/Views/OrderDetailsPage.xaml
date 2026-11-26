@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.OrderDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:OrderDetailsViewModel"
+    Title="{Binding Title}">
+
+    <Grid>
+        <components:StateView IsVisible="{Binding HasOrder, Converter={StaticResource InvertedBoolConverter}}"
+                              IsLoading="{Binding IsBusy}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding LoadCommand}" />
+
+        <ScrollView IsVisible="{Binding HasOrder}">
+            <VerticalStackLayout Padding="16,8,16,24" Spacing="12">
+
+                <!-- Success banner after checkout -->
+                <Border IsVisible="{Binding JustPlaced}" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="16"
+                        BackgroundColor="#1A16A34A">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="{x:Static icons:Icons.CheckCircle}" Style="{StaticResource Icon}" FontSize="32"
+                               TextColor="{AppThemeBinding Light={StaticResource Success}, Dark={StaticResource SuccessDark}}" />
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Order placed!" Style="{StaticResource Subtitle}" />
+                            <Label Text="Thank you. We'll contact you to confirm delivery. Please have the cash ready." Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Header -->
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Text="{Binding Order.Number}" Style="{StaticResource Title}" />
+                        <components:StatusBadge Grid.Column="1" Status="{Binding Order.Status}" />
+                        <Label Grid.Row="1" Text="{Binding Order.CreatedAtLocal, StringFormat='Placed {0:MMM d, yyyy · HH:mm}'}" Style="{StaticResource Caption}" />
+                    </Grid>
+                </Border>
+
+                <!-- Delivery -->
+                <Label Text="Delivery" Style="{StaticResource SectionTitle}" Margin="0,4,0,0" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{x:Static icons:Icons.PersonOutline}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                            <Label Grid.Column="1" Text="{Binding Order.CustomerName}" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{x:Static icons:Icons.Phone}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                            <Label Grid.Column="1" Text="{Binding Order.Phone}" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{x:Static icons:Icons.Place}" Style="{StaticResource SecondaryIcon}" FontSize="20" VerticalOptions="Start" />
+                            <Label Grid.Column="1" Text="{Binding Order.DeliveryAddress}" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="{x:Static icons:Icons.Payments}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                            <Label Grid.Column="1" Text="{Binding Order.PaymentMethodDisplay}" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Items -->
+                <Label Text="Items" Style="{StaticResource SectionTitle}" Margin="0,4,0,0" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Order.Items}" Spacing="12">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:OrderItem">
+                                    <Grid ColumnDefinitions="56,*,Auto" ColumnSpacing="12">
+                                        <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" WidthRequest="56" HeightRequest="56"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceMuted}, Dark={StaticResource SurfaceMutedDark}}">
+                                            <Image Source="{Binding ThumbnailUrl}" Aspect="AspectFill" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                            <Label Text="{Binding ProductName}" FontFamily="OpenSansSemibold" MaxLines="2" LineBreakMode="TailTruncation" />
+                                            <Label Style="{StaticResource Caption}">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Quantity, StringFormat='{0} × '}" />
+                                                        <Span Text="{Binding UnitPrice, Converter={StaticResource CurrencyConverter}}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="2" Text="{Binding LineTotal, Converter={StaticResource CurrencyConverter}}"
+                                               FontFamily="OpenSansSemibold" VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Total" Style="{StaticResource Subtitle}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding Order.Total, Converter={StaticResource CurrencyConverter}}" Style="{StaticResource Title}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</views:BasePage>

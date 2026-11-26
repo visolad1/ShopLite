@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.ProductDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:ProductDetailsViewModel"
+    Title="Details">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Loading / error -->
+        <components:StateView IsVisible="{Binding HasProduct, Converter={StaticResource InvertedBoolConverter}}"
+                              IsLoading="{Binding IsBusy}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding LoadCommand}" />
+
+        <ScrollView IsVisible="{Binding HasProduct}">
+            <VerticalStackLayout Padding="16,8,16,24" Spacing="16">
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 20" HeightRequest="340"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceMuted}, Dark={StaticResource SurfaceMutedDark}}">
+                    <Image Source="{Binding Product.ImageUrl}" Aspect="AspectFill" />
+                </Border>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding Product.CategoryName}" Style="{StaticResource Caption}" />
+                    <Label Text="{Binding Product.Name}" Style="{StaticResource Title}" FontSize="22" />
+                    <Label Text="{Binding Product.Price, Converter={StaticResource CurrencyConverter}}" Style="{StaticResource Price}" FontSize="22" />
+                </VerticalStackLayout>
+
+                <!-- Availability -->
+                <HorizontalStackLayout Spacing="6">
+                    <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center"
+                             Fill="{AppThemeBinding Light={StaticResource Success}, Dark={StaticResource SuccessDark}}">
+                        <Ellipse.Triggers>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsLowStock}" Value="True">
+                                <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsInStock}" Value="False">
+                                <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource Danger}, Dark={StaticResource DangerDark}}" />
+                            </DataTrigger>
+                        </Ellipse.Triggers>
+                    </Ellipse>
+                    <Label Text="{Binding AvailabilityText}" FontFamily="OpenSansSemibold" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource Divider}" />
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Description" Style="{StaticResource SectionTitle}" />
+                    <Label Text="{Binding Product.Description}" Style="{StaticResource Body}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom action bar -->
+        <Border Grid.Row="1" IsVisible="{Binding HasProduct}" StrokeThickness="0" Padding="16,12,16,16"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                <!-- Quantity stepper -->
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center" IsVisible="{Binding IsInStock}">
+                    <Button Text="{x:Static icons:Icons.Remove}" Style="{StaticResource StepperButton}" Command="{Binding DecreaseCommand}" />
+                    <Label Text="{Binding Quantity}" FontFamily="OpenSansSemibold" FontSize="17" MinimumWidthRequest="24"
+                           HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                    <Button Text="{x:Static icons:Icons.Add}" Style="{StaticResource StepperButton}" Command="{Binding IncreaseCommand}" />
+                </HorizontalStackLayout>
+
+                <Button Grid.Column="1" AutomationId="AddToCart" Text="Add to cart" Command="{Binding AddToCartCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsInStock}" Value="False">
+                            <Setter Property="Text" Value="Out of stock" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsAdding}" Value="True">
+                            <Setter Property="Text" Value="Adding..." />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</views:BasePage>

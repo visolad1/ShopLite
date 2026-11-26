@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.CheckoutPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:CheckoutViewModel"
+    Title="Checkout">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <components:StateView IsVisible="{Binding HasError}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding LoadCommand}" />
+
+        <ScrollView IsVisible="{Binding HasError, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Padding="16,8,16,24" Spacing="12">
+
+                <!-- Delivery details -->
+                <Label Text="Delivery details" Style="{StaticResource SectionTitle}" />
+                <Border Style="{StaticResource InputField}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Label Text="{x:Static icons:Icons.PersonOutline}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                        <Entry Grid.Column="1" AutomationId="CheckoutName" Text="{Binding CustomerName}" Placeholder="Full name" ReturnType="Next" />
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource InputField}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Label Text="{x:Static icons:Icons.Phone}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                        <Entry Grid.Column="1" AutomationId="CheckoutPhone" Text="{Binding Phone}" Placeholder="Phone number" Keyboard="Telephone" ReturnType="Next" />
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource InputField}" Padding="12,6">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Label Text="{x:Static icons:Icons.Place}" Style="{StaticResource SecondaryIcon}" FontSize="20" VerticalOptions="Start" Margin="0,10,0,0" />
+                        <Editor Grid.Column="1" AutomationId="CheckoutAddress" Text="{Binding DeliveryAddress}" Placeholder="Delivery address (street, city, postal code)"
+                                AutoSize="TextChanges" MinimumHeightRequest="72" />
+                    </Grid>
+                </Border>
+
+                <!-- Payment -->
+                <Label Text="Payment" Style="{StaticResource SectionTitle}" Margin="0,8,0,0" />
+                <Border Style="{StaticResource Card}" Padding="14"
+                        Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Text="{x:Static icons:Icons.Payments}" Style="{StaticResource Icon}"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Cash on delivery" Style="{StaticResource Subtitle}" />
+                            <Label Text="Pay when your order arrives" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Text="{x:Static icons:Icons.CheckCircle}" Style="{StaticResource Icon}"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </Grid>
+                </Border>
+
+                <!-- Order summary -->
+                <Label Text="Order summary" Style="{StaticResource SectionTitle}" Margin="0,8,0,0" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HeightRequest="28" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:CartItemDto">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <Label LineBreakMode="TailTruncation" MaxLines="2">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Quantity, StringFormat='{0} × '}" FontFamily="OpenSansSemibold" />
+                                                    <Span Text="{Binding ProductName}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label Grid.Column="1" Text="{Binding LineTotal, Converter={StaticResource CurrencyConverter}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <BoxView Style="{StaticResource Divider}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Delivery" Style="{StaticResource Caption}" />
+                            <Label Grid.Column="1" Text="Free" Style="{StaticResource Caption}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Total" Style="{StaticResource Subtitle}" />
+                            <Label Grid.Column="1" AutomationId="CheckoutTotal" Text="{Binding Total, Converter={StaticResource CurrencyConverter}}" Style="{StaticResource Title}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Place order -->
+        <Border Grid.Row="1" StrokeThickness="0" Padding="16,12,16,16" IsVisible="{Binding HasError, Converter={StaticResource InvertedBoolConverter}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding ValidationMessage}" Style="{StaticResource ErrorText}"
+                       IsVisible="{Binding ValidationMessage, Converter={StaticResource IsStringNotNullOrEmptyConverter}}" />
+                <Button AutomationId="PlaceOrderButton" Text="{Binding Total, Converter={StaticResource CurrencyConverter}, StringFormat='Place order · {0}'}"
+                        Command="{Binding PlaceOrderCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPlacing}" Value="True">
+                            <Setter Property="Text" Value="Placing order..." />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</views:BasePage>

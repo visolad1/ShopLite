@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Backend/">
+    <Project Path="Backend/Ecommerce.Backend.csproj" />
+  </Folder>
+  <Folder Name="/Mobile/">
+    <Project Path="Mobile/Ecommerce.Mobile.csproj" />
+  </Folder>
+</Solution>

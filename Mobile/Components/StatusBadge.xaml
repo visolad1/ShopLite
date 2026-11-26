@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Colored pill showing an order status. Bind the Status property. -->
+<ContentView
+    x:Class="Ecommerce.Mobile.Components.StatusBadge"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components">
+
+    <Border x:Name="Root" x:DataType="components:StatusBadge"
+            BackgroundColor="{Binding Status, Converter={StaticResource OrderStatusColorConverter}, ConverterParameter=bg}"
+            StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10,4"
+            HorizontalOptions="Start" VerticalOptions="Center">
+        <Label Text="{Binding Status}" FontSize="12" FontFamily="OpenSansSemibold"
+               TextColor="{Binding Status, Converter={StaticResource OrderStatusColorConverter}}" />
+    </Border>
+</ContentView>

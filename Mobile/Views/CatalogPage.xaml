@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.CatalogPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:CatalogViewModel"
+    Title="Shop">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+        <!-- Search -->
+        <Border Style="{StaticResource InputField}" Margin="16,8,16,0">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <Label Text="{x:Static icons:Icons.Search}" Style="{StaticResource SecondaryIcon}" />
+                <Entry Grid.Column="1" AutomationId="CatalogSearch" Text="{Binding SearchText}" Placeholder="Search products"
+                       ReturnType="Search" ReturnCommand="{Binding SearchCommand}" ClearButtonVisibility="WhileEditing" />
+            </Grid>
+        </Border>
+
+        <!-- Category filter chips -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Categories}" HeightRequest="56" SelectionMode="None"
+                        HorizontalScrollBarVisibility="Never" Margin="0,4,0,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.Header>
+                <BoxView WidthRequest="8" Color="Transparent" />
+            </CollectionView.Header>
+            <CollectionView.Footer>
+                <BoxView WidthRequest="8" Color="Transparent" />
+            </CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CategoryChip">
+                    <Border Style="{StaticResource Chip}" VerticalOptions="Center">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding SelectCategoryCommand, Source={RelativeSource AncestorType={x:Type vm:CatalogViewModel}}, x:DataType=vm:CatalogViewModel}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="{Binding Icon}" FontSize="14" VerticalTextAlignment="Center" />
+                            <Label Text="{Binding Name}" FontSize="14" FontFamily="OpenSansSemibold" VerticalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Result count -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="16,0,8,4">
+            <Label Text="{Binding ResultsText}" Style="{StaticResource Caption}" VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="Clear filters" Command="{Binding ClearFiltersCommand}" Style="{StaticResource TextButton}" HeightRequest="32" />
+        </Grid>
+
+        <!-- Product grid -->
+        <RefreshView Grid.Row="3" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding Products}" ItemSizingStrategy="MeasureFirstItem" Margin="16,0" SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Product">
+                        <components:ProductCard>
+                            <components:ProductCard.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding OpenProductCommand, Source={RelativeSource AncestorType={x:Type vm:CatalogViewModel}}, x:DataType=vm:CatalogViewModel}"
+                                    CommandParameter="{Binding .}" />
+                            </components:ProductCard.GestureRecognizers>
+                        </components:ProductCard>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <components:StateView IsLoading="{Binding IsBusy}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding RetryCommand}"
+                                          IsEmpty="{Binding IsEmpty}" EmptyIcon="{x:Static icons:Icons.Search}"
+                                          EmptyTitle="No products found" EmptyMessage="Try a different search or category."
+                                          ActionText="Clear filters" ActionCommand="{Binding ClearFiltersCommand}" />
+                </CollectionView.EmptyView>
+                <CollectionView.Footer>
+                    <BoxView HeightRequest="16" Color="Transparent" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</views:BasePage>

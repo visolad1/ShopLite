@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.StartupPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:StartupViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="16">
+        <Border BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                StrokeThickness="0" StrokeShape="RoundRectangle 24" WidthRequest="88" HeightRequest="88">
+            <Label Text="{x:Static icons:Icons.ShoppingBag}" Style="{StaticResource Icon}" FontSize="44" TextColor="White" />
+        </Border>
+        <Label Text="ShopLite" Style="{StaticResource Headline}" HorizontalTextAlignment="Center" />
+        <ActivityIndicator IsRunning="True" WidthRequest="28" HeightRequest="28" />
+    </VerticalStackLayout>
+</views:BasePage>

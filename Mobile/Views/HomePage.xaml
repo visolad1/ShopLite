@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:HomeViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <CollectionView ItemsSource="{Binding Featured}" ItemSizingStrategy="MeasureFirstItem" Margin="16,0" SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.Header>
+                <VerticalStackLayout Spacing="16" Padding="0,24,0,12">
+                    <!-- Welcome -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding Greeting}" Style="{StaticResource Headline}" />
+                        <Label Text="What are you looking for today?" Style="{StaticResource Caption}" FontSize="15" />
+                    </VerticalStackLayout>
+
+                    <!-- Search -->
+                    <Border Style="{StaticResource InputField}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Text="{x:Static icons:Icons.Search}" Style="{StaticResource SecondaryIcon}" />
+                            <Entry Grid.Column="1" AutomationId="HomeSearch" Text="{Binding SearchText}" Placeholder="Search products"
+                                   ReturnType="Search" ReturnCommand="{Binding SearchCommand}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Promo banner -->
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="20,18">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#4F46E5" Offset="0" />
+                                <GradientStop Color="#7C3AED" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Free delivery" TextColor="White" FontFamily="OpenSansSemibold" FontSize="20" />
+                                <Label Text="On every order. Pay in cash when it arrives." TextColor="#E0E7FF" FontSize="13" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{x:Static icons:Icons.Shipping}" Style="{StaticResource Icon}" FontSize="44" TextColor="White" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Categories -->
+                    <Label Text="Categories" Style="{StaticResource SectionTitle}" />
+                    <CollectionView ItemsSource="{Binding Categories}" HeightRequest="96" SelectionMode="None"
+                                    HorizontalScrollBarVisibility="Never">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Category">
+                                <VerticalStackLayout Spacing="6" WidthRequest="76">
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding OpenCategoryCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}"
+                                            CommandParameter="{Binding .}" />
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <Border Style="{StaticResource Card}" Padding="0" WidthRequest="60" HeightRequest="60"
+                                            StrokeShape="RoundRectangle 30" HorizontalOptions="Center">
+                                        <Label Text="{Binding Icon}" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <Label Text="{Binding Name}" FontSize="12" HorizontalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation" MaxLines="1" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Featured header -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Featured" Style="{StaticResource SectionTitle}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="See all" Command="{Binding SeeAllCommand}" Style="{StaticResource TextButton}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Product">
+                    <components:ProductCard>
+                        <components:ProductCard.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding OpenProductCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}"
+                                CommandParameter="{Binding .}" />
+                        </components:ProductCard.GestureRecognizers>
+                    </components:ProductCard>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <components:StateView IsLoading="{Binding IsBusy}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding RetryCommand}"
+                                      IsEmpty="{Binding IsEmpty}" EmptyTitle="No featured products" EmptyMessage="Check back soon for new arrivals." />
+            </CollectionView.EmptyView>
+
+            <CollectionView.Footer>
+                <BoxView HeightRequest="16" Color="Transparent" />
+            </CollectionView.Footer>
+        </CollectionView>
+    </RefreshView>
+</views:BasePage>

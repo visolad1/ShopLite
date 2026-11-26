@@ -1,0 +1,48 @@
+# Local development stack: PostgreSQL + Ecommerce API.
+#
+#   cp .env.example .env        # then edit the values
+#   docker compose up -d db     # database only (run the API with `dotnet run`)
+#   docker compose up -d --build  # database + API in containers
+#
+name: ecommerce
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce}
+      POSTGRES_USER: ${POSTGRES_USER:-ecommerce}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./Backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:-ecommerce};Username=${POSTGRES_USER:-ecommerce};Password=${POSTGRES_PASSWORD}"
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env (min 32 chars)}
+      Jwt__Issuer: ${JWT_ISSUER:-ecommerce-api}
+      Jwt__Audience: ${JWT_AUDIENCE:-ecommerce-mobile}
+      Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES:-10080}
+      Database__MigrateOnStartup: "true"
+      Swagger__Enabled: ${SWAGGER_ENABLED:-true}
+    ports:
+      - "${API_PORT:-5080}:8080"
+
+volumes:
+  pgdata:

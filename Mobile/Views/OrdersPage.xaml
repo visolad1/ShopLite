@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.OrdersPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:models="clr-namespace:Ecommerce.Mobile.Models"
+    xmlns:components="clr-namespace:Ecommerce.Mobile.Components"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:OrdersViewModel"
+    Title="My orders">
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <CollectionView ItemsSource="{Binding Orders}" ItemSizingStrategy="MeasureFirstItem" SelectionMode="None" Margin="16,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.Header>
+                <BoxView HeightRequest="8" Color="Transparent" />
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:OrderSummary">
+                    <Border Style="{StaticResource Card}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding OpenOrderCommand, Source={RelativeSource AncestorType={x:Type vm:OrdersViewModel}}, x:DataType=vm:OrdersViewModel}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <Label Text="{Binding Number}" Style="{StaticResource Subtitle}" />
+                            <components:StatusBadge Grid.Column="1" Status="{Binding Status}" />
+                            <Label Grid.Column="2" Grid.RowSpan="3" Text="{x:Static icons:Icons.ChevronRight}" Style="{StaticResource SecondaryIcon}" />
+                            <Label Grid.Row="1" Text="{Binding CreatedAtLocal, StringFormat='{0:MMM d, yyyy · HH:mm}'}" Style="{StaticResource Caption}" />
+                            <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                                <Label Text="{Binding ItemCount, StringFormat='{0} item(s)'}" Style="{StaticResource Caption}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding Total, Converter={StaticResource CurrencyConverter}}" Style="{StaticResource Price}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <components:StateView IsLoading="{Binding IsBusy}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding RetryCommand}"
+                                      IsEmpty="{Binding IsEmpty}" EmptyIcon="{x:Static icons:Icons.ReceiptLong}"
+                                      EmptyTitle="No orders yet" EmptyMessage="When you place an order it will show up here."
+                                      ActionText="Start shopping" ActionCommand="{Binding StartShoppingCommand}" />
+            </CollectionView.EmptyView>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="16" Color="Transparent" />
+            </CollectionView.Footer>
+        </CollectionView>
+    </RefreshView>
+</views:BasePage>

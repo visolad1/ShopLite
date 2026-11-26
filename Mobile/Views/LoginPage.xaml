@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage
+    x:Class="Ecommerce.Mobile.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Ecommerce.Mobile.Views"
+    xmlns:vm="clr-namespace:Ecommerce.Mobile.ViewModels"
+    xmlns:icons="clr-namespace:Ecommerce.Mobile.Resources.Styles"
+    x:DataType="vm:LoginViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,72,24,24" Spacing="16" MaximumWidthRequest="480">
+
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    StrokeThickness="0" StrokeShape="RoundRectangle 20" WidthRequest="72" HeightRequest="72" HorizontalOptions="Start">
+                <Label Text="{x:Static icons:Icons.ShoppingBag}" Style="{StaticResource Icon}" FontSize="36" TextColor="White" />
+            </Border>
+
+            <VerticalStackLayout Spacing="4" Margin="0,8,0,8">
+                <Label Text="Welcome back" Style="{StaticResource Headline}" />
+                <Label Text="Sign in to continue shopping" Style="{StaticResource Caption}" FontSize="15" />
+            </VerticalStackLayout>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.Mail}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" x:Name="EmailEntry" AutomationId="LoginEmail" Text="{Binding Email}" Placeholder="Email"
+                           Keyboard="Email" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" ReturnType="Next" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource InputField}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="{x:Static icons:Icons.Lock}" Style="{StaticResource SecondaryIcon}" FontSize="20" />
+                    <Entry Grid.Column="1" AutomationId="LoginPassword" Text="{Binding Password}" Placeholder="Password" IsPassword="True"
+                           ReturnType="Go" ReturnCommand="{Binding LoginCommand}" />
+                </Grid>
+            </Border>
+
+            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" Style="{StaticResource ErrorText}" />
+
+            <Button AutomationId="LoginButton" Text="Sign in" Command="{Binding LoginCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HeightRequest="28" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="2">
+                <Label Text="Don't have an account?" Style="{StaticResource Caption}" FontSize="14" VerticalTextAlignment="Center" />
+                <Button AutomationId="GoToRegister" Text="Create one" Command="{Binding GoToRegisterCommand}" Style="{StaticResource TextButton}" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

@@ -1,0 +1,19 @@
+# Secrets
+.env
+*.local.json
+
+# Build output
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+*.binlog
+
+# OS
+.DS_Store
+
+# Test artifacts
+scripts/.smoke/
